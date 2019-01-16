@@ -200,7 +200,8 @@ When there is a backwards incompatible change in CoreDNS the following process i
 * Release x.y.z: Announce that in the next release we will make backward incompatible changes.
 * Release x.y+1.0: Make the changes, but allow the old configuration to be parsed. I.e. CoreDNS will
   start from an unchanged Corefile.
-* Release x.y+1.1: Remove the lenient parsing, so CoreDNS will not start.
+* Release x.y+1.1: Remove the lenient parsing, so CoreDNS will not start if those features are still
+  used.
 
 ## Security
 
