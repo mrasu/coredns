@@ -203,6 +203,9 @@ When there is a backwards incompatible change in CoreDNS the following process i
 * Release x.y+1.1: Remove the lenient parsing, so CoreDNS will not start if those features are still
   used.
 
+E.g. 1.3.1 announce a change. 1.4.0 a new release with the change but backward compatible config.
+And finally 1.4.1 that removes the config workarounds.
+
 ## Security
 
 If you find a security vulnerability or any security related issues, please DO NOT file a public
