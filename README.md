@@ -197,11 +197,12 @@ repository](https://github.com/coredns/deployment).
 
 When there is a backwards incompatible change in CoreDNS the following process is followed:
 
-* Release x.y.z: Announce that in the next release we will make backward incompatible changes.
-* Release x.y+1.0: Make the changes, but allow the old configuration to be parsed. I.e. CoreDNS will
-  start from an unchanged Corefile.
-* Release x.y+1.1: Remove the lenient parsing, so CoreDNS will not start if those features are still
-  used.
+*  Release x.y.z: Announce that in the next release we will make backward incompatible changes.
+*  Release x.y+1.0: Increase the minor version and set the patch version to 0. Make the changes,
+   but allow the old configuration to be parsed. I.e. CoreDNS will start from an unchanged
+   Corefile.
+*  Release x.y+1.1: Increase the patch version to 1. Remove the lenient parsing, so CoreDNS will
+   not start if those features are still used.
 
 E.g. 1.3.1 announce a change. 1.4.0 a new release with the change but backward compatible config.
 And finally 1.4.1 that removes the config workarounds.
