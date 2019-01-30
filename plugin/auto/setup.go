@@ -78,8 +78,13 @@ func setup(c *caddy.Controller) error {
 
 func autoParse(c *caddy.Controller) (Auto, error) {
 	var a = Auto{
-		loader: loader{template: "${1}", re: regexp.MustCompile(`db\.(.*)`), duration: 60 * time.Second},
-		Zones:  &Zones{},
+		loader: loader{
+			template:       "${1}",
+			re:             regexp.MustCompile(`db\.(.*)`),
+			ReloadInterval: 60 * time.Second,
+			duration:       60 * time.Second,
+		},
+		Zones: &Zones{},
 	}
 
 	config := dnsserver.GetConfig(c)
