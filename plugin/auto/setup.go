@@ -78,16 +78,15 @@ func setup(c *caddy.Controller) error {
 
 func autoParse(c *caddy.Controller) (Auto, error) {
 	var a = Auto{
-		loader: loader{
-			template:       "${1}",
-			re:             regexp.MustCompile(`db\.(.*)`),
-			ReloadInterval: 60 * time.Second,
-			duration:       60 * time.Second,
-		},
-		Zones: &Zones{},
+		loader: loader{template: "${1}", re: regexp.MustCompile(`db\.(.*)`)},
+		Zones:  &Zones{},
 	}
 
 	config := dnsserver.GetConfig(c)
+
+	nilInterval := -1 * time.Second
+	configReloadInterval := nilInterval
+	configDuration := nilInterval
 
 	for c.Next() {
 		// auto [ZONES...]
@@ -146,7 +145,7 @@ func autoParse(c *caddy.Controller) (Auto, error) {
 					if i < 1 {
 						i = 1
 					}
-					a.loader.duration = time.Duration(i) * time.Second
+					configDuration = time.Duration(i) * time.Second
 				}
 
 			case "reload":
@@ -154,10 +153,10 @@ func autoParse(c *caddy.Controller) (Auto, error) {
 				if err != nil {
 					return a, plugin.Error("file", err)
 				}
-				a.loader.ReloadInterval = d
+				configReloadInterval = d
 
 			case "no_reload":
-				a.loader.ReloadInterval = 0
+				configReloadInterval = 0
 
 			case "upstream":
 				c.RemainingArgs() // eat remaining args
@@ -174,5 +173,15 @@ func autoParse(c *caddy.Controller) (Auto, error) {
 			}
 		}
 	}
+
+	loaderInterval := 60 * time.Second
+	if configReloadInterval != nilInterval {
+		loaderInterval = configReloadInterval
+	} else if configDuration != nilInterval {
+		loaderInterval = configDuration
+	}
+	a.loader.ReloadInterval = loaderInterval
+	a.loader.duration = loaderInterval
+
 	return a, nil
 }
