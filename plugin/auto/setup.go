@@ -77,16 +77,18 @@ func setup(c *caddy.Controller) error {
 }
 
 func autoParse(c *caddy.Controller) (Auto, error) {
+	nilInterval := -1 * time.Second
 	var a = Auto{
-		loader: loader{template: "${1}", re: regexp.MustCompile(`db\.(.*)`)},
-		Zones:  &Zones{},
+		loader: loader{
+			template:       "${1}",
+			re:             regexp.MustCompile(`db\.(.*)`),
+			ReloadInterval: nilInterval,
+			duration:       nilInterval,
+		},
+		Zones: &Zones{},
 	}
 
 	config := dnsserver.GetConfig(c)
-
-	nilInterval := -1 * time.Second
-	configReloadInterval := nilInterval
-	configDuration := nilInterval
 
 	for c.Next() {
 		// auto [ZONES...]
@@ -145,7 +147,8 @@ func autoParse(c *caddy.Controller) (Auto, error) {
 					if i < 1 {
 						i = 1
 					}
-					configDuration = time.Duration(i) * time.Second
+					log.Warning("TIMEOUT of directory is deprecated. Use RELOAD instead. See https://coredns.io/plugins/auto/#syntax")
+					a.loader.duration = time.Duration(i) * time.Second
 				}
 
 			case "reload":
@@ -153,10 +156,10 @@ func autoParse(c *caddy.Controller) (Auto, error) {
 				if err != nil {
 					return a, plugin.Error("file", err)
 				}
-				configReloadInterval = d
+				a.loader.ReloadInterval = d
 
 			case "no_reload":
-				configReloadInterval = 0
+				a.loader.ReloadInterval = 0
 
 			case "upstream":
 				c.RemainingArgs() // eat remaining args
@@ -174,14 +177,14 @@ func autoParse(c *caddy.Controller) (Auto, error) {
 		}
 	}
 
-	loaderInterval := 60 * time.Second
-	if configReloadInterval != nilInterval {
-		loaderInterval = configReloadInterval
-	} else if configDuration != nilInterval {
-		loaderInterval = configDuration
+	if a.loader.ReloadInterval == nilInterval {
+		if a.loader.duration == nilInterval {
+			a.loader.duration = 60 * time.Second
+		}
+		a.loader.ReloadInterval = a.loader.duration
+	} else if a.loader.duration == nilInterval {
+		a.loader.duration = a.loader.ReloadInterval
 	}
-	a.loader.ReloadInterval = loaderInterval
-	a.loader.duration = loaderInterval
 
 	return a, nil
 }

@@ -62,7 +62,7 @@ func TestAutoParse(t *testing.T) {
 				directory /tmp (.*) bliep 20
 				reload 10s
 			}`,
-			false, "/tmp", "bliep", `(.*)`, 10 * time.Second, 10 * time.Second, nil,
+			false, "/tmp", "bliep", `(.*)`, 10 * time.Second, 20 * time.Second, nil,
 		},
 		{
 			`auto {
