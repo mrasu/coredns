@@ -42,7 +42,3 @@ before_script:
 
 script:
   - make TEST_TYPE=$TEST_TYPE travis
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
-  - bash .benchmark.sh
