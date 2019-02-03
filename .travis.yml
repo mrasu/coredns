@@ -13,10 +13,6 @@ go_import_path: github.com/coredns/coredns
 git:
   depth: 3
 
-branches:
-  only:
-  - master
-
 env:
   - TEST_TYPE=coverage ETCD_VERSION=3.3.8
   - TEST_TYPE=integration ETCD_VERSION=3.3.8
